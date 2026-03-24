@@ -7,8 +7,11 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const posts = getAllPosts();
+  if (posts.length === 0) return [{ slug: "__empty" }];
   return posts.map((post) => ({ slug: post.slug }));
 }
 
@@ -48,10 +51,10 @@ export default async function BlogPostPage({ params }: Props) {
     .slice(0, 3);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
       <div className="flex gap-8">
         {/* Main article */}
-        <article className="flex-1 min-w-0">
+        <article className="flex-1 min-w-0 max-w-full overflow-hidden">
           {/* Back link */}
           <Link
             href="/"
@@ -76,7 +79,7 @@ export default async function BlogPostPage({ params }: Props) {
 
           {/* Header */}
           <div
-            className="rounded-3xl p-8 mb-6"
+            className="rounded-3xl p-5 sm:p-8 mb-6"
             style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
           >
             {/* Category */}
@@ -89,14 +92,14 @@ export default async function BlogPostPage({ params }: Props) {
             </Link>
 
             <h1
-              className="text-3xl font-bold mb-4 leading-tight"
+              className="text-2xl sm:text-3xl font-bold mb-4 leading-tight"
               style={{ color: "var(--foreground)" }}
             >
               {post.title}
             </h1>
 
             {post.summary && (
-              <p className="text-lg mb-6" style={{ color: "var(--muted)" }}>
+              <p className="text-base sm:text-lg mb-6" style={{ color: "var(--muted)" }}>
                 {post.summary}
               </p>
             )}
@@ -121,7 +124,7 @@ export default async function BlogPostPage({ params }: Props) {
 
           {/* MDX Content */}
           <div
-            className="rounded-3xl p-8 prose"
+            className="rounded-3xl p-4 sm:p-8 prose"
             style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
           >
             <MDXRemote source={post.content} />
@@ -147,7 +150,7 @@ export default async function BlogPostPage({ params }: Props) {
           {related.length > 0 && (
             <div className="mt-10">
               <h2
-                className="text-xl font-bold mb-5"
+                className="text-lg sm:text-xl font-bold mb-5"
                 style={{ color: "var(--foreground)" }}
               >
                 Related Posts

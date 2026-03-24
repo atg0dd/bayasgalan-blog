@@ -219,3 +219,12 @@ body {
   background-color: var(--border-color);
   font-weight: 600;
 }
+
+/* ── Mobile prose adjustments ── */
+@media (max-width: 640px) {
+  .prose h1 { font-size: 1.6rem; }
+  .prose h2 { font-size: 1.25rem; }
+  .prose h3 { font-size: 1.1rem; }
+  .prose table { display: block; overflow-x: auto; }
+  .prose pre  { font-size: 0.8rem; }
+}

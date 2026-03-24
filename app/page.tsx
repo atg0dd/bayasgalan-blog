@@ -7,7 +7,7 @@ export default function HomePage() {
   const posts = getAllPosts();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
       <div className="flex gap-7">
         <LeftSidebar />
 

@@ -31,7 +31,7 @@ export default function Navbar() {
       {/* ── Floating pill ── */}
       <div className="max-w-[860px] mx-auto px-4">
         <div
-          className="flex items-center justify-between px-7 py-3 rounded-full"
+          className="flex items-center justify-between px-4 sm:px-7 py-3 rounded-full"
           style={{
             backgroundColor: "var(--navbar-bg)",
             boxShadow: "0 4px 12px rgba(0,0,0,0.2)",

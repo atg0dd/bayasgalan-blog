@@ -1,0 +1,4 @@
+/blog/* /blog/:splat 200
+/category/* /category/:splat 200
+/tag/* /tag/:splat 200
+/* /404.html 404

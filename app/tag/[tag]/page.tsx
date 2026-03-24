@@ -8,8 +8,11 @@ interface Props {
   params: Promise<{ tag: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const tags = getAllTags();
+  if (tags.length === 0) return [{ tag: "__empty" }];
   return tags.map(({ tag }) => ({ tag: tag.toLowerCase() }));
 }
 
@@ -28,7 +31,7 @@ export default async function TagPage({ params }: Props) {
   if (posts.length === 0) notFound();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
       <div className="flex gap-7">
         <LeftSidebar />
 
