@@ -1,0 +1,67 @@
+---
+title: 'Building a Personal Blog with Next.js 14 and Tailwind CSS'
+date: '2026-03-24'
+tags: ['nextjs', 'react', 'tailwind', 'typescript']
+category: 'Tech'
+summary: 'A step-by-step guide to building a modern, static personal blog using Next.js App Router, Tailwind CSS, and MDX — deployable on Cloudflare Pages.'
+---
+
+# Building a Personal Blog with Next.js 14
+
+After years of using third-party platforms, I decided to build my own blog from scratch. The requirements were simple: fast, static, no database, and full control over the design.
+
+## Why Next.js?
+
+Next.js 14 with the App Router brings several improvements that make it ideal for a content-heavy site:
+
+- **Static Export**: Output pure HTML/CSS/JS — no server required.
+- **MDX Support**: Write posts as Markdown with JSX components.
+- **Great DX**: Hot reload, TypeScript, and excellent tooling out of the box.
+
+## Setting Up the Project
+
+```bash
+npx create-next-app@latest my-blog --typescript --tailwind --app
+```
+
+This gives us a fully configured Next.js app with TypeScript and Tailwind CSS v4.
+
+## Reading MDX Files
+
+The trick is using `gray-matter` to parse frontmatter and `fs` to read files at build time:
+
+```typescript
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
+
+const postsDirectory = path.join(process.cwd(), 'posts')
+
+export function getAllPosts() {
+  const files = fs.readdirSync(postsDirectory)
+  return files
+    .filter(f => f.endsWith('.mdx'))
+    .map(f => {
+      const content = fs.readFileSync(path.join(postsDirectory, f), 'utf8')
+      const { data } = matter(content)
+      return { slug: f.replace('.mdx', ''), ...data }
+    })
+}
+```
+
+## Static Export for Cloudflare Pages
+
+Add `output: 'export'` to `next.config.ts`:
+
+```typescript
+const nextConfig = {
+  output: 'export',
+  images: { unoptimized: true },
+}
+```
+
+Then `next build` produces a `out/` directory that Cloudflare Pages can serve directly.
+
+## Conclusion
+
+Building your own blog is a rewarding project. You end up with something that's exactly yours — every pixel, every feature, every decision made intentionally.
