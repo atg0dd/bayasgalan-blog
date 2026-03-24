@@ -113,15 +113,6 @@ Cloudflare Pages will auto-deploy on every `git push` to the main branch.
 
 ---
 
-## ⚠️ Important Notes
-
-- **Never commit `.env.local`** — it's already in `.gitignore`
-- All blog posts will be public (your blog is public anyway!)
-- Compress images before adding to `/public/images`
-- Always test locally with `npm run dev` before pushing
-
----
-
 ## 📬 Contact
 
 - Website: [bayasgalan.dev](https://bayasgalan.dev)
