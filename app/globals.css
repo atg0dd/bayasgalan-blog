@@ -35,6 +35,7 @@
 
 @theme inline {
   --font-sans: var(--font-poppins);
+  --font-serif: var(--font-lora);
 }
 
 body {
@@ -100,131 +101,145 @@ body {
 }
 .footer-link:hover { color: var(--accent-deep); }
 
-/* MDX Prose Styles */
+/* ── Medium-style prose ── */
 .prose {
+  font-family: var(--font-lora), Georgia, 'Times New Roman', serif;
+  font-size: 1.2rem;
+  line-height: 1.9;
   color: var(--foreground);
   max-width: none;
-  line-height: 1.8;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1.25;
 }
 
 .prose h1 {
   font-size: 2rem;
-  font-weight: 700;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   margin-bottom: 1rem;
-  line-height: 1.3;
 }
 
 .prose h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-top: 2rem;
+  font-size: 1.6rem;
+  margin-top: 2.5rem;
   margin-bottom: 0.75rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .prose h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  margin-top: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .prose p {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
 .prose a {
   color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
+.prose a:hover { color: var(--accent-deep); }
 
-.prose a:hover {
-  color: var(--accent-deep);
-}
+.prose strong { font-weight: 700; }
+.prose em { font-style: italic; }
 
 .prose code {
-  background-color: var(--border-color);
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-family: ui-monospace, monospace;
+  font-family: ui-monospace, 'Fira Code', monospace;
+  font-size: 0.9em;
+  background-color: var(--skill-bg);
+  border: 1px solid var(--skill-border);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
 }
 
 .prose pre {
-  background-color: #0f172a;
+  background-color: #1a1a2e;
   color: #e2e8f0;
-  padding: 1.25rem;
-  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border-radius: 8px;
   overflow-x: auto;
-  margin-bottom: 1.25rem;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
-
 .prose pre code {
-  background-color: transparent;
+  background: transparent;
+  border: none;
   padding: 0;
+  font-size: inherit;
   color: inherit;
 }
 
 .prose ul {
   list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+  padding-left: 1.75rem;
+  margin-bottom: 1.75rem;
 }
-
 .prose ol {
   list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+  padding-left: 1.75rem;
+  margin-bottom: 1.75rem;
 }
+.prose li { margin-bottom: 0.5rem; }
 
-.prose li {
-  margin-bottom: 0.375rem;
-}
-
+/* Medium-style pull quote */
 .prose blockquote {
-  border-left: 4px solid var(--accent);
-  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+  margin: 2.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
   font-style: italic;
+  font-size: 1.3rem;
   color: var(--muted);
-  margin: 1.5rem 0;
 }
+.prose blockquote p { margin-bottom: 0; }
 
 .prose img {
-  border-radius: 0.5rem;
-  margin: 1.5rem auto;
-  max-width: 100%;
+  width: 100%;
+  border-radius: 4px;
+  margin: 2.5rem 0;
 }
 
 .prose hr {
-  border-color: var(--border-color);
-  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 3rem 0;
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.25rem;
+  margin: 2rem 0;
+  font-size: 1rem;
 }
-
 .prose th,
 .prose td {
   border: 1px solid var(--border-color);
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 1rem;
   text-align: left;
 }
-
 .prose th {
-  background-color: var(--border-color);
+  font-family: var(--font-poppins), sans-serif;
   font-weight: 600;
+  font-size: 0.85rem;
+  background-color: var(--skill-bg);
 }
 
-/* ── Mobile prose adjustments ── */
+/* ── Mobile adjustments ── */
 @media (max-width: 640px) {
+  .prose { font-size: 1.05rem; line-height: 1.8; }
   .prose h1 { font-size: 1.6rem; }
-  .prose h2 { font-size: 1.25rem; }
-  .prose h3 { font-size: 1.1rem; }
+  .prose h2 { font-size: 1.35rem; }
+  .prose h3 { font-size: 1.15rem; }
+  .prose blockquote { font-size: 1.1rem; }
+  .prose pre { font-size: 0.8rem; padding: 1rem; }
   .prose table { display: block; overflow-x: auto; }
-  .prose pre  { font-size: 0.8rem; }
 }

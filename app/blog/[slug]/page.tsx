@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostBySlug, extractHeadings } from "@/lib/posts";
+import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
+import ReadingProgress from "@/components/ReadingProgress";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -39,7 +40,6 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
-  const headings = extractHeadings(post.content);
   const allPosts = getAllPosts();
   const related = allPosts
     .filter(
@@ -51,164 +51,184 @@ export default async function BlogPostPage({ params }: Props) {
     .slice(0, 3);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
-      <div className="flex gap-8">
-        {/* Main article */}
-        <article className="flex-1 min-w-0 max-w-full overflow-hidden">
-          {/* Back link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm mb-6 transition-colors nav-link"
-            style={{ color: "var(--muted)" }}
+    <>
+      <ReadingProgress />
+
+      <div className="max-w-[680px] mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        {/* Back link */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm mb-10 transition-colors"
+          style={{ color: "var(--muted)" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            Back to all posts
-          </Link>
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          All posts
+        </Link>
 
-          {/* Cover */}
-          {post.coverImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={post.coverImage}
-              alt={post.title}
-              className="w-full h-72 object-cover rounded-xl mb-8"
-            />
-          )}
+        {/* Category */}
+        <Link
+          href={`/category/${post.category.toLowerCase()}`}
+          className="inline-block text-xs font-semibold tracking-wide uppercase px-3 py-1 rounded-full mb-5"
+          style={{
+            backgroundColor: "rgba(168,145,217,0.15)",
+            color: "var(--accent)",
+          }}
+        >
+          {post.category}
+        </Link>
 
-          {/* Header */}
+        {/* Title */}
+        <h1
+          className="text-[2.2rem] sm:text-[2.8rem] font-bold leading-[1.2] mb-5"
+          style={{
+            color: "var(--foreground)",
+            fontFamily: "var(--font-poppins), system-ui, sans-serif",
+          }}
+        >
+          {post.title}
+        </h1>
+
+        {/* Summary / subtitle */}
+        {post.summary && (
+          <p
+            className="text-xl leading-relaxed mb-8"
+            style={{
+              color: "var(--muted)",
+              fontFamily: "var(--font-lora), Georgia, serif",
+              fontStyle: "italic",
+            }}
+          >
+            {post.summary}
+          </p>
+        )}
+
+        {/* Divider */}
+        <hr style={{ borderColor: "var(--border-color)" }} />
+
+        {/* Author row */}
+        <div className="flex items-center gap-3 my-6">
           <div
-            className="rounded-3xl p-5 sm:p-8 mb-6"
-            style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+            style={{
+              background: "linear-gradient(135deg, #A891D9 0%, #6344D4 100%)",
+            }}
           >
-            {/* Category */}
-            <Link
-              href={`/category/${post.category.toLowerCase()}`}
-              className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-4"
-              style={{ backgroundColor: "rgba(168,145,217,0.18)", color: "var(--accent)" }}
-            >
-              {post.category}
-            </Link>
-
-            <h1
-              className="text-2xl sm:text-3xl font-bold mb-4 leading-tight"
+            B
+          </div>
+          <div>
+            <p
+              className="text-sm font-semibold"
               style={{ color: "var(--foreground)" }}
             >
-              {post.title}
-            </h1>
-
-            {post.summary && (
-              <p className="text-base sm:text-lg mb-6" style={{ color: "var(--muted)" }}>
-                {post.summary}
-              </p>
-            )}
-
-            {/* Author row */}
-            <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0" style={{ background: "linear-gradient(135deg, #A891D9 0%, #6344D4 100%)" }}>
-                B
-              </div>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-                  Bayasgalan
-                </p>
-                <div className="flex items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
-                  <span>·</span>
-                  <span>{post.readingTime}</span>
-                </div>
-              </div>
+              Bayasgalan
+            </p>
+            <div
+              className="flex items-center gap-2 text-xs"
+              style={{ color: "var(--muted)" }}
+            >
+              <time dateTime={post.date}>{formatDate(post.date)}</time>
+              <span>·</span>
+              <span>{post.readingTime}</span>
             </div>
           </div>
+        </div>
 
-          {/* MDX Content */}
+        {/* Divider */}
+        <hr style={{ borderColor: "var(--border-color)" }} />
+
+        {/* Cover image */}
+        {post.coverImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full object-cover mt-10 mb-2"
+            style={{ borderRadius: "4px", maxHeight: "460px" }}
+          />
+        )}
+
+        {/* MDX body */}
+        <div className="prose mt-10">
+          <MDXRemote source={post.content} />
+        </div>
+
+        {/* Tags */}
+        {post.tags.length > 0 && (
           <div
-            className="rounded-3xl p-4 sm:p-8 prose"
-            style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
+            className="flex flex-wrap gap-2 mt-12 pt-8"
+            style={{ borderTop: "1px solid var(--border-color)" }}
           >
-            <MDXRemote source={post.content} />
-          </div>
-
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/tag/${tag.toLowerCase()}`}
-                  className="tag-pill text-sm px-3 py-1.5"
-                  style={{ borderColor: "var(--border-color)", color: "var(--muted)" }}
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {/* Related Posts */}
-          {related.length > 0 && (
-            <div className="mt-10">
-              <h2
-                className="text-lg sm:text-xl font-bold mb-5"
-                style={{ color: "var(--foreground)" }}
+            {post.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/tag/${tag.toLowerCase()}`}
+                className="tag-pill text-sm px-3 py-1.5"
               >
-                Related Posts
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {related.map((p) => (
-                  <Link
-                    key={p.slug}
-                    href={`/blog/${p.slug}`}
-                    className="hover-accent-border rounded-2xl p-4 group"
-                    style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
-                  >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Related posts */}
+        {related.length > 0 && (
+          <div
+            className="mt-16 pt-10"
+            style={{ borderTop: "1px solid var(--border-color)" }}
+          >
+            <p
+              className="text-xs font-semibold uppercase tracking-widest mb-6"
+              style={{ color: "var(--muted)" }}
+            >
+              More from Bayasgalan
+            </p>
+            <div className="flex flex-col gap-5">
+              {related.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/blog/${p.slug}`}
+                  className="group flex items-start justify-between gap-4"
+                >
+                  <div className="min-w-0">
                     <p
-                      className="hover-accent text-sm font-semibold line-clamp-2"
-                      style={{ color: "var(--foreground)" }}
+                      className="font-semibold leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors"
+                      style={{
+                        color: "var(--foreground)",
+                        fontFamily: "var(--font-poppins), sans-serif",
+                      }}
                     >
                       {p.title}
                     </p>
-                    <p className="text-xs mt-2" style={{ color: "var(--muted)" }}>
+                    <p className="text-xs" style={{ color: "var(--muted)" }}>
                       {p.readingTime}
                     </p>
-                  </Link>
-                ))}
-              </div>
+                  </div>
+                  {p.coverImage && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.coverImage}
+                      alt={p.title}
+                      className="w-16 h-16 object-cover rounded shrink-0"
+                    />
+                  )}
+                </Link>
+              ))}
             </div>
-          )}
-        </article>
-
-        {/* Table of Contents */}
-        {headings.length > 0 && (
-          <aside className="hidden xl:block w-60 shrink-0">
-            <div
-              className="sticky top-28 rounded-3xl p-4"
-              style={{ backgroundColor: "var(--navbar-bg)", border: "1px solid var(--border-color)" }}
-            >
-              <h3
-                className="text-xs font-semibold uppercase tracking-wider mb-3"
-                style={{ color: "var(--muted)" }}
-              >
-                Table of Contents
-              </h3>
-              <nav className="flex flex-col gap-1">
-                {headings.map((h) => (
-                  <a
-                    key={h.id}
-                    href={`#${h.id}`}
-                    className={`nav-link text-xs py-1 ${
-                      h.level === 2 ? "pl-0" : h.level === 3 ? "pl-3" : "pl-5"
-                    }`}
-                  >
-                    {h.text}
-                  </a>
-                ))}
-              </nav>
-            </div>
-          </aside>
+          </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
