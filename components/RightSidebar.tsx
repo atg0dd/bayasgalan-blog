@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import { getAllPosts, getAllSubcategories } from "@/lib/posts";
 
 function SideCard({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +26,7 @@ function SideHeading({ children }: { children: React.ReactNode }) {
 export default function RightSidebar() {
   const posts = getAllPosts();
   const featuredPost = posts[0] ?? null;
-  const trendingTags = getAllTags().slice(0, 10);
+  const subcategories = getAllSubcategories();
 
   return (
     <aside className="hidden xl:flex flex-col gap-5 w-68 shrink-0 sticky top-28 self-start">
@@ -84,15 +84,30 @@ export default function RightSidebar() {
         </SideCard>
       )}
 
-      {/* Trending Tags */}
-      {trendingTags.length > 0 && (
+      {/* Subcategories */}
+      {subcategories.length > 0 && (
         <SideCard>
-          <SideHeading>Trending Tags</SideHeading>
-          <div className="flex flex-wrap gap-1.5">
-            {trendingTags.map(({ tag, count }) => (
-              <Link key={tag} href={`/tag/${tag.toLowerCase()}`} className="tag-pill">
-                #{tag}
-                <span className="ml-1 opacity-50">{count}</span>
+          <SideHeading>Subsections</SideHeading>
+          <div className="flex flex-col gap-1">
+            {subcategories.map(({ slug, name, category, count }) => (
+              <Link
+                key={slug}
+                href={`/subcategory/${slug}`}
+                className="hover-category flex items-center justify-between px-3 py-2 text-sm"
+                style={{ color: "var(--foreground)" }}
+              >
+                <div className="min-w-0">
+                  <span className="font-medium">{name}</span>
+                  <span className="text-xs ml-1.5" style={{ color: "var(--muted)" }}>
+                    in {category}
+                  </span>
+                </div>
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full ml-2 shrink-0"
+                  style={{ backgroundColor: "rgba(168,145,217,0.15)", color: "var(--accent)" }}
+                >
+                  {count}
+                </span>
               </Link>
             ))}
           </div>

@@ -94,18 +94,19 @@ export default function PostCard({ post }: PostCardProps) {
           </p>
         )}
 
-        {/* Date + Tags */}
+        {/* Date + Subcategory */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <time dateTime={post.date} className="text-xs" style={{ color: "var(--muted)" }}>
             {formatDate(post.date)}
           </time>
-          <div className="flex flex-wrap gap-1">
-            {post.tags.slice(0, 3).map((tag) => (
-              <Link key={tag} href={`/tag/${tag.toLowerCase()}`} className="tag-pill">
-                #{tag}
-              </Link>
-            ))}
-          </div>
+          {post.subcategory && (
+            <Link
+              href={`/subcategory/${post.subcategory.toLowerCase().replace(/\s+/g, "-")}`}
+              className="tag-pill text-xs"
+            >
+              {post.subcategory}
+            </Link>
+          )}
         </div>
       </div>
     </article>

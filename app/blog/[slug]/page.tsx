@@ -46,7 +46,7 @@ export default async function BlogPostPage({ params }: Props) {
       (p) =>
         p.slug !== post.slug &&
         (p.category === post.category ||
-          p.tags.some((t) => post.tags.includes(t)))
+          (post.subcategory && p.subcategory === post.subcategory))
     )
     .slice(0, 3);
 
@@ -164,21 +164,19 @@ export default async function BlogPostPage({ params }: Props) {
           <MDXRemote source={post.content} />
         </div>
 
-        {/* Tags */}
-        {post.tags.length > 0 && (
+        {/* Subcategory */}
+        {post.subcategory && (
           <div
-            className="flex flex-wrap gap-2 mt-12 pt-8"
+            className="flex items-center gap-2 mt-12 pt-8"
             style={{ borderTop: "1px solid var(--border-color)" }}
           >
-            {post.tags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/tag/${tag.toLowerCase()}`}
-                className="tag-pill text-sm px-3 py-1.5"
-              >
-                #{tag}
-              </Link>
-            ))}
+            <span className="text-xs" style={{ color: "var(--muted)" }}>Filed under</span>
+            <Link
+              href={`/subcategory/${post.subcategory.toLowerCase().replace(/\s+/g, "-")}`}
+              className="tag-pill text-xs px-3 py-1.5"
+            >
+              {post.category} › {post.subcategory}
+            </Link>
           </div>
         )}
 

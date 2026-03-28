@@ -1,0 +1,91 @@
+---
+title: 'Intro to Cloud Programming'
+date: '2026-03-28'
+category: 'Tech'
+subcategory: 'Cloud Programming'
+summary: 'A beginner-friendly introduction to cloud programming — what it is, why it matters, and how to get started with the major platforms.'
+coverImage: ''
+---
+
+## What is Cloud Programming?
+
+Cloud programming is the practice of building and running applications on infrastructure hosted by third-party providers — like AWS, Google Cloud, or Azure — instead of on servers you own and manage yourself.
+
+Instead of buying hardware, you rent compute power, storage, and networking on demand. You pay for what you use, scale instantly when traffic spikes, and let the provider handle the physical maintenance.
+
+Think of it like electricity. You don't build your own power plant — you just plug in.
+
+## Why It Matters
+
+A decade ago, launching a product meant buying servers, configuring data centers, and hiring a dedicated ops team. Today, a single developer can deploy a globally distributed application in an afternoon.
+
+Cloud programming unlocks:
+
+- **Scale** — handle one request or one million without re-architecting
+- **Speed** — ship features faster without waiting for hardware procurement
+- **Resilience** — built-in redundancy and failover across regions
+- **Cost efficiency** — no idle hardware, pay only for actual usage
+
+## The Core Concepts
+
+### 1. Compute
+
+This is where your code runs. The main options are:
+
+- **Virtual Machines (VMs)** — a full OS instance, familiar and flexible (AWS EC2, GCP Compute Engine)
+- **Containers** — lightweight, portable, and consistent across environments (Docker, Kubernetes)
+- **Serverless Functions** — run code without managing any server at all; scales to zero when idle (AWS Lambda, Cloudflare Workers)
+
+### 2. Storage
+
+- **Object storage** — for files, images, backups (AWS S3, GCP Cloud Storage)
+- **Block storage** — for databases and OS disks (EBS, Persistent Disk)
+- **Databases** — managed relational (RDS, Cloud SQL) and NoSQL (DynamoDB, Firestore) options
+
+### 3. Networking
+
+- **CDNs** — serve static assets fast from edge locations near the user
+- **Load balancers** — distribute traffic across multiple instances
+- **VPCs** — isolated private networks within the cloud
+
+## The Big Three Providers
+
+| Provider | Strengths |
+|---|---|
+| AWS | Widest service catalog, most mature ecosystem |
+| Google Cloud | Best-in-class data and ML tooling |
+| Azure | Deep Microsoft and enterprise integration |
+
+All three offer a free tier generous enough to build and learn on without spending a dollar.
+
+## A Minimal Example: Serverless Function
+
+Here is a simple serverless function on AWS Lambda (Node.js):
+
+```js
+export const handler = async (event) => {
+  const name = event.queryStringParameters?.name ?? 'World';
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: `Hello, ${name}!` }),
+  };
+};
+```
+
+Deploy this with the AWS CLI or the console, wire it to an API Gateway trigger, and you have a live HTTP endpoint — no server configuration required.
+
+## Where to Start
+
+If you are brand new to cloud programming, here is a practical path:
+
+1. **Create a free account** on AWS or GCP
+2. **Deploy a static site** to S3 or Cloud Storage — zero cost, immediate feedback
+3. **Write your first serverless function** and call it from a browser
+4. **Connect a managed database** and build a small CRUD API
+5. **Explore IAM** — understanding permissions early will save you a lot of pain later
+
+The cloud has a steep learning curve at first, but once the mental model clicks, it is one of the most empowering environments to build in.
+
+---
+
+This is the first post in the **Cloud Programming** series. Next up: setting up a production-ready deployment pipeline on AWS.

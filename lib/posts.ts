@@ -9,7 +9,7 @@ export interface PostMeta {
   slug: string;
   title: string;
   date: string;
-  tags: string[];
+  subcategory: string;
   category: string;
   summary: string;
   coverImage: string;
@@ -37,7 +37,7 @@ export function getAllPosts(): PostMeta[] {
         slug,
         title: data.title || "Untitled",
         date: data.date || new Date().toISOString().split("T")[0],
-        tags: data.tags || [],
+        subcategory: data.subcategory || "",
         category: data.category || "Tech",
         summary: data.summary || "",
         coverImage: data.coverImage || "",
@@ -64,7 +64,7 @@ export function getPostBySlug(slug: string): Post | null {
       slug,
       title: data.title || "Untitled",
       date: data.date || new Date().toISOString().split("T")[0],
-      tags: data.tags || [],
+      subcategory: data.subcategory || "",
       category: data.category || "Tech",
       summary: data.summary || "",
       coverImage: data.coverImage || "",
@@ -82,24 +82,35 @@ export function getPostsByCategory(category: string): PostMeta[] {
   );
 }
 
-export function getPostsByTag(tag: string): PostMeta[] {
-  return getAllPosts().filter((post) =>
-    post.tags.map((t) => t.toLowerCase()).includes(tag.toLowerCase())
+export function getPostsBySubcategory(subcategory: string): PostMeta[] {
+  return getAllPosts().filter(
+    (post) => post.subcategory.toLowerCase() === subcategory.toLowerCase()
   );
 }
 
-export function getAllTags(): { tag: string; count: number }[] {
+/** Returns all unique subcategories with their post count and parent category. */
+export function getAllSubcategories(): {
+  name: string;
+  slug: string;
+  category: string;
+  count: number;
+}[] {
   const posts = getAllPosts();
-  const tagCounts: Record<string, number> = {};
+  const map: Record<string, { name: string; category: string; count: number }> =
+    {};
 
   posts.forEach((post) => {
-    post.tags.forEach((tag) => {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    });
+    if (!post.subcategory) return;
+    const slug = post.subcategory.toLowerCase().replace(/\s+/g, "-");
+    if (map[slug]) {
+      map[slug].count++;
+    } else {
+      map[slug] = { name: post.subcategory, category: post.category, count: 1 };
+    }
   });
 
-  return Object.entries(tagCounts)
-    .map(([tag, count]) => ({ tag, count }))
+  return Object.entries(map)
+    .map(([slug, { name, category, count }]) => ({ slug, name, category, count }))
     .sort((a, b) => b.count - a.count);
 }
 
