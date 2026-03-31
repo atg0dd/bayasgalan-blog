@@ -33,12 +33,12 @@ export default function RightSidebar() {
       {/* About Me */}
       <SideCard>
         <div className="flex items-center gap-3 mb-3">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
-            style={{ background: "linear-gradient(135deg, #A891D9 0%, #6344D4 100%)" }}
-          >
-            B
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/profile.png"
+            alt="Bayasgalan"
+            className="w-12 h-12 rounded-full shrink-0 object-cover"
+          />
           <div>
             <p className="font-semibold text-sm" style={{ color: "var(--foreground)" }}>
               Bayasgalan

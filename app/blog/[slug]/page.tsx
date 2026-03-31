@@ -119,14 +119,12 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Author row */}
         <div className="flex items-center gap-3 my-6">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #A891D9 0%, #6344D4 100%)",
-            }}
-          >
-            B
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/profile.png"
+            alt="Bayasgalan"
+            className="w-10 h-10 rounded-full shrink-0 object-cover"
+          />
           <div>
             <p
               className="text-sm font-semibold"
