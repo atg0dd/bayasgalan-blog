@@ -42,13 +42,16 @@ export default function PostCard({ post }: PostCardProps) {
     >
       {/* Cover */}
       <Link href={`/blog/${post.slug}`} tabIndex={-1}>
-        <div className="h-44 overflow-hidden">
+        <div
+          className="h-44 overflow-hidden flex items-center justify-center"
+          style={{ backgroundColor: "var(--skill-bg)" }}
+        >
           {post.coverImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={post.coverImage}
               alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              className="w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-105"
             />
           ) : (
             <div
