@@ -1,5 +1,5 @@
 ---
-title: "AWS VPC 테스트 및 웹 서버 설"
+title: "AWS VPC 테스트 및 웹 서버 설치"
 category: 'Tech'
 subcategory: 'Cloud Programming'
 date: '2026-04-02'
@@ -19,3 +19,157 @@ summary: '클라우드 프로그래밍 2주차 실습'
 ## EC2 instance 네트워크 설정
 > EC2 instance 생성하는 방법 - 직전 블록 참조. 
 
+#### 1. OS image를 ```Ubuntu```로 설정합니다. 
+![os_image](/images/cloud_prog_week2/server_os.png)
+
+#### 2. 네트워크 설정 상세 설명
+![network_setting](/images/cloud_prog_week2/network_setting.png)
+
+EC2 instance를 생성하면서 다음을 체크해야 한다. 
+1. Allow HTTPS traffic from the internet
+2. Allow HTTP traffic from the internet
+
+![network_setting](/images/cloud_prog_week2/network_setting.png)
+
+HTTP 및 HTTPS를 허용하면 외부에서 내 서버로 요청을 보낼 수 있다.
+허용하지 않은 경우에는 외부에서 웹 브라우저를 통한 접근이 불가능하다, 해당 포트를 이용한 요청은 차단된다.
+
+> 다만, 다른 포트가 열려 있다면 여전히 외부 접근이 가능할 수 있으므로, 완전히 프라이빗한 서버가 되려면 보안 그룹과 네트워크 설정을 함께 고려해야 합니다.
+
+#### 3. 인스턴스 SSH 연결
+![instance_dashboard](/images/cloud_prog_week2/instance_1.png)
+
+생성한 인스턴스와 ```SSH```로 연결하기 위해 `instance_id`에 눌러준다. 
+
+![instance_dashboard](/images/cloud_prog_week2/instance_2.png)
+![instance_dashboard](/images/cloud_prog_week2/instance_3.png)
+
+사진에 나와 있는 것 처럼 아니면 
+
+```
+chmod 400 my-key.pem
+ssh -i my-key.pem ubuntu@your-public-ip
+```
+
+이러한 명령어로 연결 가능합니다.
+
+**성공적으로 연결된 경우 다음과 같이 뜰 것이다.**
+![instance_dashboard](/images/cloud_prog_week2/instance_4.png)
+
+
+#### 4. 루트 권한 
+우리 지금 AWS EC2 인스턴스에 SSH를 통해 연결한 상태이다. 즉, ssh를 통해 instance를 제어할 수 있다는 뜻이다. 
+
+하지만 현재 우리는 루트 권한이 없기 때문에 할 수 있는 일이 제한적이다. 
+그럼으로 루트 권한을 가지기 위해 다은 과정을 시행한다. 
+1. 새로 만들어진 운영체제이기 때문에 루트 사용자 비밀번호를 만든다. 
+```
+sudo passwd root 
+```
+명령어를 사용하여 비밀번호 설정이 가능하다. 
+비밀번호 설정 뒤 
+
+2. 루트 유저로 로그인한다
+
+```
+su 
+```
+명령어를 사용하여 루트 사용자로 로그인 한다. 
+![instance_dashboard](/images/cloud_prog_week2/instance_5.png)
+위와 같이 `#` 보이는 경우 루트 사용자로 로그인 한 것을 알 수 있다. 
+
+3. 네트워크 상태 확인을 위해 패키지 설치
+```
+apt install net-tools
+```
+`net-tools` 패키지는 리눅스에서 네트워크 상태를 확인하고 설정을 관리할 때 사용하는 기본적인 명령어 모음이다.
+![instance_dashboard](/images/cloud_prog_week2/instance_6.png)
+
+4. 인스턴스에 연결된 ENI와 할당된 IP 주소 정보 확인
+```
+ifconfig
+```
+`ifconfig` 명령어는 리눅스에서 네트워크 인터페이스의 상태와 IP 정보를 확인하거나 설정하는 도구이다.
+![instance_dashboard](/images/cloud_prog_week2/instance_7.png)
+위 사진과 같이 EC2 instance의 네트워크 인터페이스 상태와 IP 정보를 확인할 수 있다. 
+
+---
+
+## Ping test to Instance
+Ping test는 네트워크에서 특정 서버(또는 컴퓨터)에 연결이 되는지 확인하는 가장 기본적인 테스트입니다.
+
+#### Ping test 하는 방법
+```
+ping ip address/url
+```
+
+**먼저 google.com로 ping test 해 봅시다.**/
+![instance_dashboard](/images/cloud_prog_week2/instance_8.png)
+packet loss 없이 잘 되네요.
+
+**지금 우리 만든 instance로 ping test 해봅시다.** 
+
+새로운 cmd tab 하나 만들어서 `ping` 보내면 됩니다.
+![instance_dashboard](/images/cloud_prog_week2/instance_9.png)
+가상의 방화벽 보안 그룹(Security Group)때문에 외부에서 인스턴스 Public IP로 Ping을 보내도 응답이 없다.
+외부 트래픽에 대한 ‘인바운드 규칙’을 혀용으로 추가해주어야만 외부 응답이 가능해진다.
+
+---
+
+## Install Web Server
+
+이번 실습으로 우리는 `apache` 웹 서버를 설치할 것이다.
+
+>Apache2는 웹 서버 소프트웨어로, 사용자의 브라우저 요청을 받아 웹 페이지를 전달해주는 프로그램입니다
+
+1. #### 패키지 업데이트
+```
+# sudo apt-get update 
+# sudo apt-get upgrade
+```
+
+패키지 목록을 최신으로 업데이트하고, 설치된 프로그램들을 최신 버전으로 업그레이드하기 위해 사용한다
+
+2. #### 웹 서버 설치
+```
+sudo apt install apache2
+```
+
+3. #### UFW를 이용한 HTTP/HTTPS 트래픽 허용
+```
+# sudo ufw allow http
+# sudo ufw allow https
+```
+서버의 방화벽에서 웹 트래픽을 허용하기 위한 설정이다.
+기본적으로 방화벽은 외부에서 들어오는 요청을 차단하기 때문에, 이 설정을 하지 않으면 웹 브라우저를 통해 서버에 접속할 수 없다.
+
+4. #### 서버 프로그램 가동
+```
+systemctl start apache2
+```
+서버를 가동 한 후에, EC2 instance public ip 주소에 접속하면 다음과 같이 페이즈가 나올 것입니다. 
+![instance_dashboard](/images/cloud_prog_week2/instance_10.png)
+
+5. #### 서버를 중지하기 위해서
+```
+sudo service apache2 stop
+```
+치면 됩니다. 
+
+#### 추가로
+```
+cd /var/www/html
+vim index.html 
+```
+index.html 파일을 열고 apache home page를 수정할 수 있습니다. 
+수정한 다음에 
+
+```
+sudo systemctl restart apache2
+``` 
+
+
+## Conclusion
+이번 실습을 통해 AWS EC2 인스턴스를 생성하고, 네트워크 설정부터 SSH 접속, Ping 테스트, 그리고 Apache2 웹 서버 설치까지 전체적인 흐름을 경험할 수 있었다.
+특히 보안 그룹(Security Group)과 방화벽(UFW) 설정이 서버 접근에 큰 영향을 미친다는 점을 확인할 수 있었으며, 단순히 서버를 실행하는 것뿐만 아니라 네트워크와 보안 설정이 함께 고려되어야 한다는 점을 이해하는 것이 중요하다.
+이 과정은 이후 클라우드 기반 서비스 구축이나 웹 애플리케이션 배포의 기초가 되므로 반드시 익숙해질 필요가 있다.
