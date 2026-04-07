@@ -1,0 +1,119 @@
+---
+title: "AWS 네트워크"
+date: "2026-04-07"
+category: "Tech"
+subcategory: "Cloud Programming"
+summary: "클라우드 프로그래밍 3주차 강의내용 (part-2)"
+coverImage: "/images/w3/aws_architecture.png"
+---
+# Introduction
+
+AWS는 전 세계 어디에서나 낮은 지연 시간과 높은 가용성을 제공하기 위해 체계적인 글로벌 인프라를 구축하고 있습니다. 본 글에서는 AWS 인프라의 근간이 되는 리전(Region)과 가용 영역(AZ)의 구조부터, 그 위에서 보안과 통신을 담당하는 가상 네트워크 환경인 VPC(Virtual Private Cloud)의 핵심 구성 요소까지 입문자가 이해하기 쉽게 정리해 보겠습니다.
+
+# AWS Infrastructure
+
+## 1. Availability Zone
+
+AWS는 100+개의 가용 영역을 운영하고 있습니다.
+
+> 가용 영역이란 Region 안에 있는 하나 이상의 개별 데이터 센터를 말한다.
+
+리전 안에 있는 가용 영역들은 자연재해를 극복하기 위해 서로 100키로 정도의 거리에 떠러져 위치한다. 이것은 자연재해를 극복할 뿐만 아니라 서로 single-digit millisecond latency로 데이터 전달할 수 있는 거리입니다.
+
+> When AWS deploys updates to its services, deployments to Availability Zones in the same Region are separated in time to prevent correlated failure.
+
+리전 안에 있는 모든 가용 영역은 서로 high-bandwidth, low-latency, dedicated metro fiber로 연결되었습니다.
+
+![](/images/w3_p2/1775558797311.png)리전 안에 있는 가용 영역들은 2개의 Transit Center를 통해 인터넷에 연결합니다.
+
+> Transit Center는 **AWS 리전 내부의 모든 가용 영역(AZ)과 AWS 글로벌 네트워크를 연결하는 대형 네트워크 허브**이다.
+
+---
+
+## 2. Regions
+
+![](/images/w3_p2/1775558989080.png)리전은 최소 3개 이상의 가용 영역으로 구성됩니다.
+
+---
+
+## 3. AWS Local Zones
+
+> [AWS Local Zones](https://aws.amazon.com/about-aws/global-infrastructure/localzones/) are a type of infrastructure deployment that places compute, storage, database, and other [select AWS services](https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/) close to large population and industry centers.
+
+사람이 많은 지역 및 클라우드 서비스 많이 요구되는 지역에 가깝게 만들어진 infrastructure를 AWS Local Zone이라고 합니다.
+
+---
+
+## 4. Point of Presence (PoP)
+
+![](/images/w3_p2/1775559394387.png)> PoP - A physical AWS edge location where AWS deploys CDN, DNS, DDoS protection, and traffic acceleration services to improve latency, reliability, and global performance.
+
+사용자가 많은 지역에 latency를 줄이고 더 빠른 서비스를 제공하기 위해 만든 infrastructure를 PoP라고 생각하면 될 것 같습니다.
+
+![](/images/w3_p2/1775561150777.png)---
+
+# AWS Network Services
+
+## 1. VPC (Virtual Private Cloud)
+
+VPC는 AWS 안에서 내가 직접 만드는 사설 네트워크를 의미합니다.\
+그리고 나는 이 VPC 전체를 직접 관리할 수 있습니다.\
+무슨 뜻이냐면, VPC 안에서 IP 주소 범위, 인터넷 접근 여부, 방화벽 설정(Security Group, NACL), 라우팅, 인스턴스 간 통신 방식까지 모두 내가 원하는 대로 설정할 수 있다는 뜻입니다.
+
+나는 하나의 리전 안에 여러 개의 독립적인 VPC를 만들 수 있고,\
+각 리전마다 서로 완전히 분리된 VPC들을 생성할 수도 있다.
+
+### intra-AZ
+
+AWS 리전은 복수의 가용 영역(AZ)으로 구성되며, 각 AZ 내부에는 여러 논리적 데이터 센터가 포함된다.\
+이 데이터 센터들은 **고밀도 광섬유(HDF, High-Density Fiber)** 기반의 **100GE/400GE 링크**로 상호 연결되어 **Intra-AZ 네트워크 패브릭**을 형성한다.
+
+각 AZ는 **최대 100km 이내**로 물리적으로 이격 배치되어 지역 단위 장애(정전, 재해 등)에 대한 **Fault Domain**을 분리한다. AWS는 워크로드를 복수 AZ에 분산 배치해 **Fault Tolerance**를 확보한다.
+
+지리적으로 분리된 AZ들은 AWS 전용 백본망을 통해 상호 연결되며, 이러한 **AZ 간 연결 패브릭**을 **Inter-AZ 연결**이라고 한다.
+
+> **10 Gigabit Ethernet (10GE) ==** 10,000 Mbps (10 Gbps)
+
+### Transit Center
+
+리전이 외부 인터넷과 통신해야 하는 경우, 모든 트래픽은 **트랜짓 센터(Transit Center**)를 경유한다.\
+리전 내부의 각 가용 영역(AZ)은 외부 인터넷 접근을 위해 트랜짓 센터에 연결되어 있으며, 이를 기반으로 전체 리전의 네트워크 경로가 구성된다.
+
+이처럼 **각 가용 영역이 트랜짓 센터와 맺는 연결 구조**를 **트랜짓 센터 연결(Transit Center Connection**)이라고 한다.
+
+![](/images/w3_p2/1775562463103.png)> VPC 안에 subnet을 이용하여 네트워크를 분리할 수 있습니다.
+
+![](/images/w3_p2/1775562640674.png)VPC를 만들면 기본적으로 가상 라우터가 함께 생성되고,\
+내가 여러 Subnet을 만들면 그 라우터가 자동으로 각 Subnet을 연결해준다.
+
+![](/images/w3_p2/1775563179725.png)> 라우터는 서로 다른 네트워크 (subnet)간 통신을 담당하고,\
+> switch는 같은 네트워크 (subnet) 안의 장치들을 연결하는 데 사용된다.
+
+### VPC Security
+
+AWS VPC는 보안 그룹(security group)과 네트워크 ACL (Access Control List) 같은 firewall 기능을 제공합니다.
+
+> Firewall은 **들어오는(inbound)** / **나가는(outbound)** 네트워크 트래픽을\
+> IP, 포트, 프로토콜 기반으로 **허용(allow)하거나 차단(deny)** 하는 보안 규칙 집합입니다.
+
+**Network ACL(NACL)**\
+→ Subnet 단위에서 적용되는 Stateless 방화벽으로, 각 Subnet에 들어오고 나가는 트래픽을 규칙(Allow/Deny)에 따라 필터링한다.
+
+**Security Group(SG)**\
+→ 인스턴스 단에서 동작하는 Stateful 방화벽으로, 명시적으로 허용한 트래픽만 인스턴스에 들어오도록 제어하며, 허용된 요청의 응답 트래픽은 자동으로 허용된다.
+
+![](/images/w3_p2/1775563760594.png)![](/images/w3_p2/1775563815944.png)![](/images/w3_p2/1775563885176.png)---
+
+### Internet Gateway
+
+VPC는 private network인데 public network와 연결하기 위해 인터넷 게이트웨이라는 네트워킹 자원을 생성한 후 VPC와 연결하여 외부 인터넷과 통식합니다.
+
+![](/images/w3_p2/1775564116954.png)---
+
+## 마치며
+
+오늘은 AWS의 기본 인프라와 네트워크 서비스에 대해 살펴보았습니다.
+
+AWS가 전 세계에 Region과 Availability Zone을 어떻게 구성하는지, 그리고 그 위에서 VPC를 통해 나만의 사설 네트워크를 어떻게 만들고 관리하는지 배웠습니다. 또한 Security Group과 NACL로 트래픽을 제어하고, Internet Gateway를 통해 외부 인터넷과 연결하는 방법까지 확인했습니다.
+
+다음 시간에는 더 깊은 내용으로 찾아오겠습니다.
