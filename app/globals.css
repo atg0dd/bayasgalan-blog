@@ -19,17 +19,17 @@
 
 /* ── Dark mode ── */
 .dark {
-  --background: #0D0D0D;
-  --navbar-bg: #161616;
-  --foreground: #EDEDED;
-  --muted: #A0A0A0;
+  --background: #191919;
+  --navbar-bg: #1e1e1e;
+  --foreground: #E8E8E7;
+  --muted: #9B9B9B;
   --accent: #A891D9;
   --accent-deep: #6344D4;
   --accent-hover: #FFFFFF;
-  --card-bg: #161616;
-  --border-color: rgba(150, 150, 150, 0.15);
-  --sidebar-bg: #161616;
-  --skill-bg: rgba(255, 255, 255, 0.03);
+  --card-bg: #242424;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --sidebar-bg: #1e1e1e;
+  --skill-bg: rgba(255, 255, 255, 0.05);
   --skill-border: rgba(255, 255, 255, 0.08);
 }
 
@@ -95,6 +95,16 @@ body {
 .tiptap.prose li { margin: 0.25rem 0; }
 .tiptap.prose img { max-width: 100%; border-radius: 6px; margin: 1rem 0; }
 .tiptap.prose hr { border-color: var(--border-color); margin: 2rem 0; }
+.tiptap.prose ul[data-type="taskList"] { list-style: none; padding-left: 0.5rem; }
+.tiptap.prose ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; }
+.tiptap.prose ul[data-type="taskList"] li input[type="checkbox"] { margin-top: 4px; accent-color: var(--accent); }
+.tiptap.prose mark { background: rgba(250,220,80,0.4); padding: 0.05em 0.2em; border-radius: 2px; }
+.tiptap.prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.tiptap.prose th, .tiptap.prose td { border: 1px solid var(--border-color); padding: 0.5rem 0.75rem; text-align: left; }
+.tiptap.prose th { background: rgba(128,128,128,0.08); font-weight: 600; }
+.tiptap.prose iframe { width: 100%; max-width: 640px; aspect-ratio: 16/9; border-radius: 6px; margin: 1rem 0; }
+.tiptap.prose a { color: var(--accent); text-decoration: underline; }
+
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;

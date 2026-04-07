@@ -44,6 +44,14 @@ export default function AdminPage() {
   const [newSlug, setNewSlug] = useState("");
   const [creating, setCreating] = useState(false);
   const editorRef = useRef<EditorHandle>(null);
+  const saveRef = useRef<() => void>(() => {});
+
+  // Autosave every 30s when a post is open
+  useEffect(() => {
+    if (!activeSlug) return;
+    const id = setInterval(() => saveRef.current(), 30_000);
+    return () => clearInterval(id);
+  }, [activeSlug]);
 
   const loadPosts = useCallback(async () => {
     const res = await fetch(`${API}/posts`);
@@ -90,6 +98,9 @@ export default function AdminPage() {
       setStatus("Save failed");
     }
   }
+
+  // Keep saveRef pointing at the latest save closure so autosave always uses fresh state
+  useEffect(() => { saveRef.current = save; });
 
   async function createPost() {
     if (!newSlug.trim()) return;
@@ -275,6 +286,7 @@ export default function AdminPage() {
                 ref={editorRef}
                 postSlug={activeSlug}
                 initialContent={initialContent}
+                onSave={save}
               />
             </div>
 
