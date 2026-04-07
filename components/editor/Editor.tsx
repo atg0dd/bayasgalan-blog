@@ -13,6 +13,7 @@ import Highlight from "@tiptap/extension-highlight";
 import Youtube from "@tiptap/extension-youtube";
 import CharacterCount from "@tiptap/extension-character-count";
 import Underline from "@tiptap/extension-underline";
+import { Details, DetailsSummary, DetailsContent } from "@tiptap/extension-details";
 import { Markdown } from "tiptap-markdown";
 import Toolbar from "./Toolbar";
 import SlashMenu, { type SlashMenuHandle } from "./SlashMenu";
@@ -69,6 +70,9 @@ const BlogEditor = forwardRef<EditorHandle, Props>(
         Highlight.configure({ multicolor: false }),
         Youtube.configure({ width: 640, height: 360 }),
         CharacterCount,
+        Details.configure({ persist: true }),
+        DetailsSummary,
+        DetailsContent,
         Underline,
         SlashCommands.configure({
           onOpen: (props) => slashMenuRef.current?.open(props),

@@ -74,6 +74,13 @@ export function getSlashItems(query: string): SlashCommandItem[] {
         editor.chain().focus().deleteRange(range).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
     },
     {
+      title: "Toggle",
+      description: "Collapsible toggle block",
+      icon: "▶",
+      command: ({ editor, range }) =>
+        editor.chain().focus().deleteRange(range).setDetails().run(),
+    },
+    {
       title: "Divider",
       description: "Horizontal rule",
       icon: "—",

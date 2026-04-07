@@ -137,6 +137,13 @@ export default function Toolbar({ editor, postSlug }: Props) {
           🔗 Link
         </button>
         <button
+          className={`${btn} ${e.isActive("details") ? active : ""}`}
+          onMouseDown={(ev) => { ev.preventDefault(); e.chain().focus().setDetails().run(); }}
+          title="Toggle block"
+        >
+          ▶ Toggle
+        </button>
+        <button
           className={btn}
           onMouseDown={(ev) => {
             ev.preventDefault();
