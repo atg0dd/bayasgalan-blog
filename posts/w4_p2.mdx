@@ -1,0 +1,16 @@
+---
+title: "도커에 대한 모든 것"
+date: "2026-04-08"
+category: "Tech"
+---
+
+## 도커를 구성하는 컴포넌트
+
+- 도커 엔진 - 컨테이너를 실제로 실행하고 관리하는 Docker의 핵심 엔진
+- 도커 CLI - Docker Engine에게 일을 시키는 명령 통로. 즉, 제가 `docker container run`이라고 CLI 명령어를 치면:
+
+1. Docker CLI가 명령을 Docker API 요청으로 변환
+2. Docker API가 Docker Engine에게 전달
+3. Docker Engine이 컨테이너를 실행시킴
+
+- 도커 이미지 캐시 - 로컬에 있는 도커 이미지를 보관하는 메모리
