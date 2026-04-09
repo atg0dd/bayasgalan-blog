@@ -2,6 +2,7 @@
 title: "도커 실습"
 date: "2026-04-08"
 category: "Tech"
+summary: "클라우드 프로그래밍 4주차 실습 (part-2)"
 ---
 도커 설치 및 기본 명령어를 배웠으면 이어 실습을 진행할게요
 
@@ -11,4 +12,159 @@ category: "Tech"
 docker image pull diamol/ch03-web-ping
 ```
 
-![](/images/w4_lab2/1775658418515.png)
+![](/images/w4_lab2/1775658418515.png)\---
+
+```
+docker container run -d --name web-ping diamol/ch03-web-ping
+```
+
+`-d` - detach라는 용어로 컨테이너를 백그라운드에서 실행
+
+`--name` - 새로 생성되는 컨테이너의 이름을 지정하는 옵션.
+
+![](/images/w4_lab2/1775693673068.png)&gt; ! 주의 - `--name` 옵션은 실행중인 컨테이너에 이름을 지정해주는 옵션이고 기존에 있는 이미지 이름을 바꾸지 않는다.
+
+![](/images/w4_lab2/1775693762503.png)&gt; 추가로 `docker container run` 명령어 안에 `docker image pull` 기능이 기본적으로 들어가 있다.
+
+---
+
+컨테이너 내부에서 실행 중인 **프로그램의 표준 출력(stdout**)과 **표준 에러(stderr**)을 확인.
+
+```
+docker container logs web-ping
+```
+
+![](/images/w4_lab2/1775693962369.png)\---
+
+컨테이너 삭제
+
+```
+docker rm -f [container-name / container-id]
+```
+
+![](/images/w4_lab2/1775694301021.png)&gt; 실행중인 컨테이너를 이 명령어를 사용해 바로 삭제할 수 있네요.
+
+---
+
+컨테이너 환경 변수(Target)를 다른 값으로 지정하여 새로운 컨테이너 실행하기
+
+```
+docker container run —-env Target=google.com diamol/ch03-web-ping 
+```
+
+도커 컨테이너를 실행할 때 `--env` 옵션을 사용하면 **컨테이너 내부에서 사용되는 환경 변수(environment variable**)를 원하는 값으로 설정할 수 있습니다.
+
+여기서 `-d` 옵션을 사용하지 않았기 때문에 애플리케이션 출력이 실시간으로 cmd에 보입니다. 보
+
+![](/images/w4_lab2/1775694948059.png)보시면 제가 `--env`를 줄여서 `-e`로 썼어요.
+
+> 여기서 hyphen을 언제 하나만 쓰고 언제 2개를 쓰는지 궁금하시면 short option 사용할을 때 `-` 하나만 쓰고 long option 사용할 때 `--` 2개를 쓴다고 하네요.
+
+```
+-e   = --env
+-d   = --detach
+-v   = --volume
+-p   = --publish (port)
+```
+
+그리고 계속 `ping` 보내니까 애플리케이션 종료하기 위해 `ctrl + c` 눌러주면 멈춥니다.
+
+---
+
+이전 블록에 안 알려줬는데 모든 컨테이너를 한번에 삭제하려면
+
+```
+docker container rm -f $(docker container --all --quiet)
+```
+
+![](/images/w4_lab2/1775695597579.png)`docker container ls`로 확인해주면 다 삭제되었네요.
+
+---
+
+# Dockerfile
+
+모든 것을 도커파일에서 사직되었답니다.
+
+> 도커가 이미지를 만들기 위해 도커파일에 있는 instruction (command)을 사용한다.
+>
+> 도카 엔진이 도커파일 안에 있는 명령어들을 (instruction) 일일이 실행하고 작동 가능한 이미지를 만든다.
+
+![](/images/w4_p2/1775696157814.png)
+
+### 도커 파일의 구조
+
+![](/images/w4_p2/1775696417993.png)
+
+## 도커 파일 만들기
+
+```
+vim [dockerfile name]
+```
+
+원하는 텍스트 에디터를 사용해 Dockerfile을 생성할 수 있습니다. (Dockerfile은 일반 텍스트 파일이라고 생각해도 됩니다.)
+
+![](/images/w4_lab2/1775697312788.png)저는 개인적으로 `neovim`를 선호합니다. 지금 AI 시대, Vibe Coding 많이 하지만 vim motion 배워놓으면 언젠가 도움이 되겠죠. 
+
+```
+FROM diamol/node
+```
+
+dockerfile의 첫번째 instruction은 꼭 `FROM` 이어야 된다. 
+
+> FROM – 기존에 존재하는 이미지를 베이스 이미지로 사용합니다. 즉, 이미 준비되어 있는 `diamol/node` 이미지를 기반으로 하고, 그 위에 필요한 기능을 추가한다고 생각하면 됩니다.
+
+---
+
+```
+ENV TARGET="blog.sixeyed.com"
+ENV METHOD="HEAD"
+ENV INTERVAL=3000
+```
+
+`ENV` - 환경변수를 설정하는 명령어입니다. 
+
+---
+
+```
+WORKDIR /web-ping
+```
+
+컨테이너 내부의 작업 디렉토리를 설정합니다. 즉,앞으로 실행되는 모든 명령은 `/web-ping` 폴더 기준으로 실행합니다.
+
+---
+
+```
+COPY app.js
+```
+
+`COPY` – Dockerfile과 같은 폴더에 있는 파일을 컨테이너 이미지 내부로 복사하는 명령어입니다.
+
+---
+
+```
+CMD ["node", "/web-ping/app.js"]
+```
+
+`CMD` - 컨테이너가 시작될 때 실행될 기본 명령어를 지정하는 키워드
+
+![](/images/w4_lab2/1775705881077.png)이렇게 도커파일을 만들 수 있습니다. 도커파일 기본적인 내용을 이해했으면 실질적으로 실습을 진행해볼게요.
+
+---
+
+## 도커파일 실습
+
+`git clone https://github.com/gilbutITbook/080258.git cp-docker` 명령어로 실습 자료를 다운받주시고\
+`cd cp-docker/ch03/exercises/web-ping` 경로로 이동합니다. 
+
+![](/images/w4_lab2/1775707003070.png)여기 나와 있는 파일들을 간략하게 설명드리면
+
+- `Dockerfile`: web-ping의 dockerfile 스크립트가 담긴 파일
+- `app.js`: web-ping 애플리케이션을 구현한 Node.js 코드가 담긴 파vi d일
+- `README.md`: 이 이미지에 대한 정보가 적힌 문서 파일
+- `Jenkinsfile`: CI/CD 도구에 ‘빌드부터 배포까지의 작업 순서’를 적어놓은 텍스트 파일)
+
+지금 build 해보면
+
+```
+docker image build --tag web-ping 
+```
