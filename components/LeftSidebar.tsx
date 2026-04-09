@@ -23,11 +23,11 @@ function SideHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function LeftSidebar() {
-  const posts = getAllPosts();
+export default async function LeftSidebar() {
+  const posts = await getAllPosts();
   const techCount = posts.filter((p) => p.category.toLowerCase() === "tech").length;
   const personalCount = posts.filter((p) => p.category.toLowerCase() === "personal").length;
-  const techSubs = getAllSubcategories().filter(
+  const techSubs = (await getAllSubcategories()).filter(
     (s) => s.category.toLowerCase() === "tech"
   );
 

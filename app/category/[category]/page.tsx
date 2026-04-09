@@ -30,7 +30,7 @@ export default async function CategoryPage({ params }: Props) {
     notFound();
   }
 
-  const posts = getPostsByCategory(category);
+  const posts = await getPostsByCategory(category);
   const displayName = category.charAt(0).toUpperCase() + category.slice(1);
 
   return (

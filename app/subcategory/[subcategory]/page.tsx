@@ -11,14 +11,14 @@ interface Props {
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const subs = getAllSubcategories();
+  const subs = await getAllSubcategories();
   if (subs.length === 0) return [{ subcategory: "__empty" }];
   return subs.map(({ slug }) => ({ subcategory: slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { subcategory } = await params;
-  const subs = getAllSubcategories();
+  const subs = await getAllSubcategories();
   const found = subs.find((s) => s.slug === subcategory);
   const name = found?.name ?? subcategory;
   return {
@@ -29,12 +29,12 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function SubcategoryPage({ params }: Props) {
   const { subcategory } = await params;
-  const subs = getAllSubcategories();
+  const subs = await getAllSubcategories();
   const found = subs.find((s) => s.slug === subcategory);
 
   if (!found) notFound();
 
-  const posts = getPostsBySubcategory(found.name);
+  const posts = await getPostsBySubcategory(found.name);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
