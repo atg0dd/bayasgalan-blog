@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
+import { getNotionPosts, getNotionPostBySlug } from "./notion";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -20,17 +21,16 @@ export interface Post extends PostMeta {
   content: string;
 }
 
-export function getAllPosts(): PostMeta[] {
+function getLocalPosts(): PostMeta[] {
   if (!fs.existsSync(postsDirectory)) return [];
 
-  const fileNames = fs.readdirSync(postsDirectory);
-  const posts = fileNames
+  return fs
+    .readdirSync(postsDirectory)
     .filter((name) => name.endsWith(".mdx") || name.endsWith(".md"))
     .map((fileName) => {
       const slug = fileName.replace(/\.(mdx|md)$/, "");
       const fullPath = path.join(postsDirectory, fileName);
-      const fileContents = fs.readFileSync(fullPath, "utf8");
-      const { data, content } = matter(fileContents);
+      const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
       const rt = readingTime(content);
 
       return {
@@ -44,20 +44,15 @@ export function getAllPosts(): PostMeta[] {
         readingTime: rt.text,
       } as PostMeta;
     });
-
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
 }
 
-export function getPostBySlug(slug: string): Post | null {
+function getLocalPostBySlug(slug: string): Post | null {
   try {
     const mdxPath = path.join(postsDirectory, `${slug}.mdx`);
     const mdPath = path.join(postsDirectory, `${slug}.md`);
     const fullPath = fs.existsSync(mdxPath) ? mdxPath : mdPath;
 
-    const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { data, content } = matter(fileContents);
+    const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
     const rt = readingTime(content);
 
     return {
@@ -76,28 +71,49 @@ export function getPostBySlug(slug: string): Post | null {
   }
 }
 
-export function getPostsByCategory(category: string): PostMeta[] {
-  return getAllPosts().filter(
+/** Returns all posts from local files + Notion. Notion takes precedence for duplicate slugs. */
+export async function getAllPosts(): Promise<PostMeta[]> {
+  const [localPosts, notionPosts] = await Promise.all([
+    Promise.resolve(getLocalPosts()),
+    getNotionPosts(),
+  ]);
+
+  const map = new Map<string, PostMeta>();
+  for (const p of localPosts) map.set(p.slug, p);
+  for (const p of notionPosts) map.set(p.slug, p); // Notion overrides local
+
+  return [...map.values()].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+}
+
+/** Fetches a single post. Notion takes precedence over local files. */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const notionPost = await getNotionPostBySlug(slug);
+  if (notionPost) return notionPost;
+  return getLocalPostBySlug(slug);
+}
+
+export async function getPostsByCategory(category: string): Promise<PostMeta[]> {
+  const posts = await getAllPosts();
+  return posts.filter(
     (post) => post.category.toLowerCase() === category.toLowerCase()
   );
 }
 
-export function getPostsBySubcategory(subcategory: string): PostMeta[] {
-  return getAllPosts().filter(
+export async function getPostsBySubcategory(subcategory: string): Promise<PostMeta[]> {
+  const posts = await getAllPosts();
+  return posts.filter(
     (post) => post.subcategory.toLowerCase() === subcategory.toLowerCase()
   );
 }
 
 /** Returns all unique subcategories with their post count and parent category. */
-export function getAllSubcategories(): {
-  name: string;
-  slug: string;
-  category: string;
-  count: number;
-}[] {
-  const posts = getAllPosts();
-  const map: Record<string, { name: string; category: string; count: number }> =
-    {};
+export async function getAllSubcategories(): Promise<
+  { name: string; slug: string; category: string; count: number }[]
+> {
+  const posts = await getAllPosts();
+  const map: Record<string, { name: string; category: string; count: number }> = {};
 
   posts.forEach((post) => {
     if (!post.subcategory) return;

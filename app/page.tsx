@@ -3,8 +3,8 @@ import PostCard from "@/components/PostCard";
 import LeftSidebar from "@/components/LeftSidebar";
 import RightSidebar from "@/components/RightSidebar";
 
-export default function HomePage() {
-  const posts = getAllPosts();
+export default async function HomePage() {
+  const posts = await getAllPosts();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">

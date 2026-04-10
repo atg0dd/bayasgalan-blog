@@ -58,6 +58,8 @@ export default function Navbar() {
 
           {/* Right: theme toggle + mobile burger */}
           <div className="flex items-center gap-4">
+            {/* Vertical divider */}
+            <span className="hidden md:block w-px h-5" style={{ backgroundColor: "var(--border-color)" }} />
             {/* Portfolio-style pill toggle */}
             {mounted && (
               <button

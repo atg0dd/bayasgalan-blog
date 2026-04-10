@@ -23,10 +23,10 @@ function SideHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function RightSidebar() {
-  const posts = getAllPosts();
+export default async function RightSidebar() {
+  const posts = await getAllPosts();
   const featuredPost = posts[0] ?? null;
-  const subcategories = getAllSubcategories();
+  const subcategories = await getAllSubcategories();
 
   return (
     <aside className="hidden xl:flex flex-col gap-5 w-68 shrink-0 sticky top-28 self-start">
