@@ -4,7 +4,19 @@ date: "2026-04-08"
 category: "Tech"
 summary: "클라우드 프로그래밍 4주차 실습 (part-2)"
 ---
-도커 설치 및 기본 명령어를 배웠으면 이어 실습을 진행할게요
+# Introduction
+
+이번 챕터에서는 도커의 기본 명령어부터 시작해서, Dockerfile을 직접 작성하고 이미지를 빌드하는 실습을 진행했습니다. 처음에는 명령어 하나하나가 낯설게 느껴질 수 있지만, 결국 모든 것은 이미지를 만들고 컨테이너를 실행하는 흐름으로 이어집니다.
+
+이번 챕터에서 다룬 내용은 아래와 같습니다.
+
+- 기본 도커 명령어 (`run`, `logs`, `rm` 등)
+- Dockerfile 구조 및 작성법
+- 이미지 레이어와 캐시 작동 원리
+- Dockerfile 최적화 전략
+- Multi-Stage Build
+
+---
 
 이번에 `ch03-web-ping` 이미지를 Docker Hub에서 다운받고 실습을 진행할게요.
 
@@ -12,7 +24,9 @@ summary: "클라우드 프로그래밍 4주차 실습 (part-2)"
 docker image pull diamol/ch03-web-ping
 ```
 
-![](/images/w4_lab2/1775658418515.png)\---
+![](/images/w4_lab2/1775658418515.png)
+
+---
 
 ```
 docker container run -d --name web-ping diamol/ch03-web-ping
@@ -22,9 +36,13 @@ docker container run -d --name web-ping diamol/ch03-web-ping
 
 `--name` - 새로 생성되는 컨테이너의 이름을 지정하는 옵션.
 
-![](/images/w4_lab2/1775693673068.png)&gt; ! 주의 - `--name` 옵션은 실행중인 컨테이너에 이름을 지정해주는 옵션이고 기존에 있는 이미지 이름을 바꾸지 않는다.
+![](/images/w4_lab2/1775693673068.png)
 
-![](/images/w4_lab2/1775693762503.png)&gt; 추가로 `docker container run` 명령어 안에 `docker image pull` 기능이 기본적으로 들어가 있다.
+>  ⚠️주의 - `--name` 옵션은 실행중인 컨테이너에 이름을 지정해주는 옵션이고 기존에 있는 이미지 이름을 바꾸지 않는다.
+
+![](/images/w4_lab2/1775693762503.png)
+
+> 추가로 `docker container run` 명령어 안에 `docker image pull` 기능이 기본적으로 들어가 있다.
 
 ---
 
@@ -34,7 +52,9 @@ docker container run -d --name web-ping diamol/ch03-web-ping
 docker container logs web-ping
 ```
 
-![](/images/w4_lab2/1775693962369.png)\---
+![](/images/w4_lab2/1775693962369.png)
+
+---
 
 컨테이너 삭제
 
@@ -42,7 +62,9 @@ docker container logs web-ping
 docker rm -f [container-name / container-id]
 ```
 
-![](/images/w4_lab2/1775694301021.png)&gt; 실행중인 컨테이너를 이 명령어를 사용해 바로 삭제할 수 있네요.
+![](/images/w4_lab2/1775694301021.png)
+
+> 실행중인 컨테이너를 이 명령어를 사용해 바로 삭제할 수 있네요.
 
 ---
 
@@ -87,11 +109,11 @@ docker container rm -f $(docker container --all --quiet)
 
 > 도커가 이미지를 만들기 위해 도커파일에 있는 instruction (command)을 사용한다.
 >
-> 도카 엔진이 도커파일 안에 있는 명령어들을 (instruction) 일일이 실행하고 작동 가능한 이미지를 만든다.
+> 도커 엔진이 도커파일 안에 있는 명령어들을 (instruction) 일일이 실행하고 작동 가능한 이미지를 만든다.
 
-![](/images/w4_p2/1775696157814.png)### 도커 파일의 구조
+![](/images/w4_p2/1775696157814.png)\### 도커 파일의 구조
 
-![](/images/w4_p2/1775696417993.png)## 도커 파일 만들기
+![](/images/w4_p2/1775696417993.png)\## 도커 파일 만들기
 
 ```
 vim [dockerfile name]
@@ -152,15 +174,149 @@ CMD ["node", "/web-ping/app.js"]
 `git clone https://github.com/gilbutITbook/080258.git cp-docker` 명령어로 실습 자료를 다운받주시고\
 `cd cp-docker/ch03/exercises/web-ping` 경로로 이동합니다.
 
-![](/images/w4_lab2/1775707003070.png)여기 나와 있는 파일들을 간략하게 설명드리면
+![](/images/w4_lab2/1775738069807.png)여기 나와 있는 파일들을 간략하게 설명드리면
 
 - `Dockerfile`: web-ping의 dockerfile 스크립트가 담긴 파일
+
 - `app.js`: web-ping 애플리케이션을 구현한 Node.js 코드가 담긴 파vi d일
+
 - `README.md`: 이 이미지에 대한 정보가 적힌 문서 파일
+
 - `Jenkinsfile`: CI/CD 도구에 ‘빌드부터 배포까지의 작업 순서’를 적어놓은 텍스트 파일)
 
 지금 build 해보면
 
 ```
-docker image build --tag web-ping 
+docker image build --tag web-ping . # 도커파일을 사용해 도커 이미지를 생성한다
 ```
+
+위 명령어를 실행하면 Docker 엔진이 Dockerfile을 기반으로 새로운 이미지를 생성합니다.
+
+> `--tag` - 새로운 이미지에 이름을 지정해줄 때 사용하는 옵션입니다.
+>
+> ---
+>
+> ⚠️ 명령어 끝의 `.`(점)은 반드시 작성해야 합니다. 이 점은 현재 디렉터리를 의미하며, 이미지를 빌드할 때 Docker에게 빌드 컨텍스트를 어디에서 가져와야 하는지 알려주는 역할을 합니다
+
+![](/images/w4_lab2/1775738206966.png)![](/images/w4_lab2/1775738314218.png)`docker image ls` 명령어를 더 유용하게 사용할 수 있는 방법을 찾았습니다.
+
+```
+docker image ls 'w*'
+```
+
+이 명령어는 `w`로 시작된 모든 이미지를 출력하라는 뜻입니다.
+
+```
+docker container run -e TARGET=docker.com -e INTERVER=5000 web-ping
+```
+
+우리 build 한 이미지를 실행해보면 다음과 같습니다.
+
+![](/images/w4_lab2/1775739647925.png)또, 너무 유익한 명령어 있는데요, 우리 이미지의 `history`를 확인할 수 있습니다.
+
+```
+docker image history image-name
+```
+
+이 명령어는 이미지를 만들고 있는 모든 `layer`를 보여줍니다.
+
+**Layer 가 뭐지?**
+
+**레이어 = 파일시스템 변경 내용의 스냅샷**
+
+각 레이어는 이전 레이어 위에 "무엇이 달라졌는지"만 기록합니다. 예를 들어 Layer 2는 Layer 1 전체를 복사하는 게 아니라 `apt-get install`로 추가된 파일들의 변경분만 담고 있어요.
+
+**레이터가 Immutable인 이유**
+
+한번 만들어진 레이어는 절대 수정되지 않습니다. 그래서 여러 이미지가 같은 레이어를 공유해서 재사용할 수 있고, 캐싱도 가능해집니다. `docker build` 할 때 "이미 만든 레이어는 건너뛴다"는 게 바로 이 덕분입니다.
+
+> Dockerfile에서 파일을 추가하거나 변경하는 명령어만 레이어를 만든다(RUN, COPY, ADD, FROM). 나머지는 설정만 바꾸므로 레이어를 만들지 않는다.
+
+---
+
+```
+docker system df
+```
+
+이 명령어를 통해 Docker가 디스크를 얼마나 사용하고 있는지를 알 수 있습니다.
+
+![](/images/w4_lab2/1775742636037.png)
+
+---
+
+## 도커파일 스크립트 최적화
+
+> 도커파일 최적화 - 이미지 레이어를 줄이고, 캐시를 잘 활용하는 최적화 전략
+
+#### 1. 캐시 활용
+
+도커는 이미지를 빌드할 때 레이어를 위에서 아래로 순서대로 쌓습니다. 그런데 특정 레이어가 변경되면 그 아래 레이어들은 캐시를 무시하고 전부 다시 빌드합니다. 그래서 자주 바뀌는 것(소스 코드)은 아래에, 잘 안 바뀌는 것(dependencies 설치)은 위에 두는 게 좋습니다.
+
+#### 2. 레이어 줄이기
+
+`RUN` 명령어를 여러 줄 쓰면 레이어가 그만큼 많이 생깁니다. `&&`로 묶어서 하나의 `RUN`으로 합치면 레이어 수를 줄일 수 있습니다.
+
+#### 3. 불필요한 파일 제외
+
+`.dockerignore` 파일을 사용해서 이미지에 포함할 필요 없는 파일들(예: `node_modules`, `.git`)을 제외하면 이미지 크기가 줄어듭니다.
+
+#### 4. 베이스 이미지 선택
+
+`ubuntu` 같은 무거운 베이스 이미지 대신 `alpine` 같은 가벼운 이미지를 쓰면 전체 이미지 크기가 크게 줄어듭니다.
+
+### 
+
+### 이미지 레이어 캐시를 사용해보기
+
+Current Working Directory에서 `app.js`를 수정합니다. (캐시 사용을 테스트를 위해 수정이 필요합니다)
+
+![](/images/w4_lab2/1775815835503.png)![](/images/w4_lab2/1775815931877.png)한 줄 차이만 있어도 충분합니다. 
+
+```
+docker image build -t web-ping:v2 .
+```
+
+이 명령어를 사용해 다시 한번 build 해보면
+
+![](/images/w4_lab2/1775816343332.png)`CACHE`를 사용하고 있는 것을 확인할 수 있습니다. 
+
+지금 잘 변하지 않은 파일들을 순서대로 작성하고 레이어 캐시 이용을 최적화하겠습니다.
+
+![](/images/w4_lab2/1775816824403.png)
+
+---
+
+# Multi-Stage Build
+
+멀티 스테이지 빌드란 무엇인가?
+
+이미지를 빌드할 때 단계를 여러 개로 나누는 방법이에요.
+
+예를 들어 Java 앱을 빌드한다고 하면, 빌드할 때는 JDK(컴파일러 포함, 무거움)가 필요하지만 실행할 때는 JRE(런타임만, 가벼움)만 있으면 되잖아요. 근데 그냥 Dockerfile 하나로 만들면 JDK가 최종 이미지에 그대로 남아서 이미지가 불필요하게 커져요.
+
+Multi-Stage Build는 이걸 이렇게 해결해요.
+
+```
+FROM maven AS build        # 1단계: 빌드용 (무거운 JDK)
+COPY . .
+RUN mvn package
+
+FROM openjdk:jre AS final  # 2단계: 실행용 (가벼운 JRE)
+COPY --from=build target/app.jar .  # 1단계 결과물만 가져옴
+```
+
+최종 이미지에는 2단계만 남아요. 
+
+1단계는 빌드할 때만 쓰고 버려지는 거예요. 덕분에 이미지 크기가 크게 줄어듭니다.
+
+> **멀티 스테이지 빌드는 무거운 작업(빌드)과 가벼운 결과(실행)을 분리하여, 안전하고 효율적인 컨테이너를 만드는 기술이다.**
+
+![](/images/w4_lab2/1775817552175.png)실제 예제는 위와 같습니다. 
+
+`AS` 뒤에 오는 이름은 각 단계를 참조하기 위한 별명이라고 생각하면 됩니다.
+
+# 마무리
+
+이번 챕터의 핵심은 **Dockerfile을 잘 작성하는 것이 곧 효율적인 이미지를 만드는 것**이라는 점입니다.
+
+레이어 순서 하나만 바꿔도 빌드 시간이 크게 줄어들고, Multi-Stage Build를 활용하면 최종 이미지 크기도 눈에 띄게 줄어듭니다. 단순히 동작하는 Dockerfile을 넘어서, 캐시와 레이어를 의식하며 작성하는 습관을 들이는 것이 중요합니다.
