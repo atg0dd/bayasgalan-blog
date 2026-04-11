@@ -74,8 +74,12 @@ async function queryDatabase(
 
 export async function getNotionPosts(): Promise<PostMeta[]> {
   if (!isConfigured()) return [];
-  if (postsCache) return postsCache;
+  if (postsCache) {
+    console.log("[notion] cache hit:", postsCache.length);
+    return postsCache;
+  }
 
+  console.log("[notion] fetching from API...");
   try {
     const notion = makeClient();
     const response = await queryDatabase(notion, {
@@ -85,6 +89,7 @@ export async function getNotionPosts(): Promise<PostMeta[]> {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     postsCache = response.results.map((page: any) => pageToMeta(page));
+    console.log("[notion] fetched:", postsCache.length, "posts →", postsCache.map(p => p.slug));
     return postsCache;
   } catch (err) {
     console.error("[notion] getNotionPosts failed:", err);
