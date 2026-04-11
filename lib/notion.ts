@@ -70,6 +70,7 @@ async function queryDatabase(
 }
 
 export async function getNotionPosts(): Promise<PostMeta[]> {
+  console.log("[notion] configured:", isConfigured());
   if (!isConfigured()) return [];
 
   try {
