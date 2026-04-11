@@ -6,6 +6,9 @@ function isConfigured(): boolean {
   return !!(process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID);
 }
 
+let postsCache: PostMeta[] | null = null;
+// ^^ module-level cache so Notion is only queried once per build process
+
 // Database queries need the 2022 API — the 2025 version removed /databases/{id}/query
 // (replaced by dataSources). Markdown retrieval uses the default 2025 version because
 // pages/{id}/markdown is a newer endpoint that doesn't exist in the 2022 API.
@@ -70,8 +73,8 @@ async function queryDatabase(
 }
 
 export async function getNotionPosts(): Promise<PostMeta[]> {
-  console.log("[notion] configured:", isConfigured());
   if (!isConfigured()) return [];
+  if (postsCache) return postsCache;
 
   try {
     const notion = makeClient();
@@ -81,7 +84,8 @@ export async function getNotionPosts(): Promise<PostMeta[]> {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return response.results.map((page: any) => pageToMeta(page));
+    postsCache = response.results.map((page: any) => pageToMeta(page));
+    return postsCache;
   } catch (err) {
     console.error("[notion] getNotionPosts failed:", err);
     return [];
