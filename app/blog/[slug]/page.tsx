@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }: Props) {
     <>
       <ReadingProgress />
 
-      <div className="max-w-[680px] mx-auto px-4 sm:px-6 py-10 sm:py-16">
+      <div className="max-w-200 mx-auto px-4 sm:px-6 py-10 sm:py-16">
         {/* Back link */}
         <Link
           href="/"
