@@ -9,27 +9,28 @@ summary: "클라우드 프로그래밍 4주차 실습 (part-1)"
 
 이번 실습으로 제가 가지고 있는 MacBook에 도커를 설치하고 기본적인 명령어들을 실험해보려고 합니다. \
 도커는 자연적으로 Linux에서 Best performance으로 작동한다고 합니다. \
-그래서 여려분들 되도록 리눅스 환경에 도커를 설치해서 사용하는 것을 추천합니다. 
+그래서 여려분들 되도록 리눅스 환경에 도커를 설치해서 사용하는 것을 추천합니다.
 
-### 왜 도커를 Mac에서 사용 추천 안 하냐? 
+### 왜 도커를 Mac에서 사용 추천 안 하냐?
 
 MacOS는 Darvin (BSD) kernel를 사용합니다. 하지만 도커는 Linux Kernel feature들을 요구합니다. \
 그래서 우리 MacOS에서 도커를 설치해서 사용하면 도커가 Linux VM를 우리 머신에 설치해서 작동합니다.\
 이런 이유로 Mac에서 도커를 쓰면 CPU 하고 RAM를 좀 먹는 편이네요.\
 \
-하지만 저는 편의상 Mac에서 합니다. 
+하지만 저는 편의상 Mac에서 합니다.
 
 ---
 
 # 도커가 딱 뭐지?
 
-도커는 오픈 소스 플랫품인데 우리 앱을 (짠 코드) 컨테이너로 만들어주는 containerization tool입니다. 
+도커는 오픈 소스 플랫품인데 우리 앱을 (짠 코드) 컨테이너로 만들어주는 containerization tool입니다.
 
 도커 구조는 다음과 같아요.
 
-![](/images/w4_lab1/1775649442462.png)- Docker Deamon (dockerd)는 호스트 머신에 작동하면서 도커 객체, 이미지, 컨테이너, 네트워크, volume등을 관리해주는 애예요.
+![](/images/w4_lab1/1775649442462.png)\- Docker Deamon (dockerd)는 호스트 머신에 작동하면서 도커 객체, 이미지, 컨테이너, 네트워크, volume등을 관리해주는 애예요.
+
 - **도커 이미지** - 앱 코드, 앱에 필요한 모든 패키지, 런타임, 파일 시스템, 실행 설정, 베이스 이미지 등을 가지고 있는 **파일**이라고 생각하면 됩니다. \
-  그리고 도커 이미지를 실행하면, **실행중인 그 상태를 컨테이너**라고 말합니다. 
+  그리고 도커 이미지를 실행하면, **실행중인 그 상태를 컨테이너**라고 말합니다.
 - **Docker Registry -** 이것은 도커 이미지를 보관하는 저장소입니다. Docker Hub이라는 public registry 있고 사람들이 다양한 이미지를 찾을 수 있어요. 또한, 당연히 우리 private registry를 만들어서 우리 앱의 도커 이미지를 안전하게 저장할 수 있죠.
 
 ---
@@ -38,7 +39,7 @@ MacOS는 Darvin (BSD) kernel를 사용합니다. 하지만 도커는 Linux Kerne
 
 도커 설피 방법은 어렵지 않아요.\
 [https://docs.docker.com/get-started/get-docker/ ](https://docs.docker.com/get-started/get-docker/)\
-이 링크로 들어가서 다운받으면 다예요. 
+이 링크로 들어가서 다운받으면 다예요.
 
 ![](/images/w4_lab1/1775647959134.png)![](/images/w4_lab1/1775648039687.png)이렇게 설치해주고
 
@@ -77,7 +78,7 @@ docker container run diamol/ch02-hello-diamol
 docker container run <image>
 ```
 
-명령어를 실행하면 알아서 로컬 저장소에서 `<image>` 를 찾고 없으면 Docker Hub에서 자동으로 다운받아서 실행해줘요. Docker Hub에 없으면 물론 오류 나겠죠. 
+명령어를 실행하면 알아서 로컬 저장소에서 `<image>` 를 찾고 없으면 Docker Hub에서 자동으로 다운받아서 실행해줘요. Docker Hub에 없으면 물론 오류 나겠죠.
 
 ![](/images/w4_lab1/1775650838739.png)제 결과 이렇게 잘 나왔고요, 현재 로컬에 어떤 이미지들이 있는지 확인하고 싶으시면 계속 얽어주세요\~
 
@@ -91,9 +92,7 @@ docker images
 
 실행하면 다음과 같이 로컬에 있는 이미지들이 보이실 거예요.
 
-![](/images/w4_lab1/1775650915372.png)
-
----
+![](/images/w4_lab1/1775650915372.png)\---
 
 ### 3. 컨테이너 내부 터미널 접속
 
@@ -106,13 +105,13 @@ docker container run --interactive --tty diamol/base
 1. `--interactive` (줄여서 `-i`) - **컨테이너 안으로 키보드 입력을 보낼 수 있게 해주는 기능**
 2. `--tty` (줄여서 `-t`) - **진짜 터미널 화면처럼 만들어주는 옵션**
 3. 그리고 이 명령어는 “`diamol/base` 이미지로 컨테이너 하나 만들고 그 안에 **들어갈 수 있는 터미널 환경을 연결해줘**"라는 명령어입니다. \
-   실행해 보면: 
+   실행해 보면:
 
-![](/images/w4_lab1/1775653150737.png)여기서 다음 `shortcut`을 모르면 머리 아파요. 
+![](/images/w4_lab1/1775653150737.png)여기서 다음 `shortcut`을 모르면 머리 아파요.
 
 1. `ctrl + D` - 컨테이너 종료 (쉘이 꺼짐)
-2. `[ctrl + P]  + [ctrl + Q]` - 컨테이너 계속 실행 상태, 나는 컨테이너의 쉘에서 빠져 나옴 (detach)
-3. 컨테이너 내부 터미널 재접속 하려면:  `docker exec -it [컨테이너 ID] /bin/sh`
+2. `[ctrl + P] + [ctrl + Q]` - 컨테이너 계속 실행 상태, 나는 컨테이너의 쉘에서 빠져 나옴 (detach)
+3. 컨테이너 내부 터미널 재접속 하려면: `docker exec -it [컨테이너 ID] /bin/sh`
 
 ---
 
@@ -122,9 +121,7 @@ docker container run --interactive --tty diamol/base
 docker container ls
 ```
 
-![](/images/w4_lab1/1775653718699.png)
-
----
+![](/images/w4_lab1/1775653718699.png)\---
 
 ### 5. 대상 컨테이너에서 실행 중인 프로세스 목록
 
@@ -132,9 +129,7 @@ docker container ls
 docker container top [컨테이너 ID]
 ```
 
-![](/images/w4_lab1/1775653780834.png)
-
----
+![](/images/w4_lab1/1775653780834.png)\---
 
 ### 6. 대상 컨테이너에서 수집된 모든 로그 출력
 
@@ -142,9 +137,7 @@ docker container top [컨테이너 ID]
 docker container logs [컨테이너 ID]
 ```
 
-![](/images/w4_lab1/1775654009062.png)
-
----
+![](/images/w4_lab1/1775654009062.png)\---
 
 ### 7. 대상 컨테이너의 상세한 정보
 
@@ -152,9 +145,7 @@ docker container logs [컨테이너 ID]
 docker container inspect [컨테이너 ID]
 ```
 
-![](/images/w4_lab1/1775654106142.png)
-
----
+![](/images/w4_lab1/1775654106142.png)\---
 
 > ⚠️ **주의: 컨테이너는 자동으로 삭제되지 않습니다.**
 >

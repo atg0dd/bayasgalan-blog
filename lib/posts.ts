@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
-import { getNotionPosts, getNotionPostBySlug } from "./notion";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -21,7 +20,7 @@ export interface Post extends PostMeta {
   content: string;
 }
 
-function getLocalPosts(): PostMeta[] {
+export async function getAllPosts(): Promise<PostMeta[]> {
   if (!fs.existsSync(postsDirectory)) return [];
 
   return fs
@@ -43,10 +42,11 @@ function getLocalPosts(): PostMeta[] {
         coverImage: data.coverImage || "",
         readingTime: rt.text,
       } as PostMeta;
-    });
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-function getLocalPostBySlug(slug: string): Post | null {
+export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const mdxPath = path.join(postsDirectory, `${slug}.mdx`);
     const mdPath = path.join(postsDirectory, `${slug}.md`);
@@ -71,29 +71,6 @@ function getLocalPostBySlug(slug: string): Post | null {
   }
 }
 
-/** Returns all posts from local files + Notion. Notion takes precedence for duplicate slugs. */
-export async function getAllPosts(): Promise<PostMeta[]> {
-  const [localPosts, notionPosts] = await Promise.all([
-    Promise.resolve(getLocalPosts()),
-    getNotionPosts(),
-  ]);
-
-  const map = new Map<string, PostMeta>();
-  for (const p of localPosts) map.set(p.slug, p);
-  for (const p of notionPosts) map.set(p.slug, p); // Notion overrides local
-
-  return [...map.values()].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-}
-
-/** Fetches a single post. Notion takes precedence over local files. */
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const notionPost = await getNotionPostBySlug(slug);
-  if (notionPost) return notionPost;
-  return getLocalPostBySlug(slug);
-}
-
 export async function getPostsByCategory(category: string): Promise<PostMeta[]> {
   const posts = await getAllPosts();
   return posts.filter(
@@ -108,7 +85,6 @@ export async function getPostsBySubcategory(subcategory: string): Promise<PostMe
   );
 }
 
-/** Returns all unique subcategories with their post count and parent category. */
 export async function getAllSubcategories(): Promise<
   { name: string; slug: string; category: string; count: number }[]
 > {
